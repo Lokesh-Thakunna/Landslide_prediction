@@ -1,0 +1,104 @@
+# HH-LEWS — .gitignore
+
+# ─────────────────────────────────────────
+# SECRETS & ENV — NEVER COMMIT THESE
+# ─────────────────────────────────────────
+.env
+.env.local
+.env.development
+.env.production
+*.pem
+private.pem
+public.pem
+
+# ─────────────────────────────────────────
+# ML MODEL FILES (large binary files)
+# ─────────────────────────────────────────
+models/*.pkl
+models/*.joblib
+models/checksums.json
+# To share models, use git-lfs or upload to S3
+
+# ─────────────────────────────────────────
+# DATASETS (large files — store in /data locally)
+# ─────────────────────────────────────────
+data/
+*.tif
+*.geotiff
+*.csv.gz
+*.hdf5
+*.nc
+
+# ─────────────────────────────────────────
+# NODE.JS
+# ─────────────────────────────────────────
+node_modules/
+dist/
+build/
+.cache/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+
+# ─────────────────────────────────────────
+# PYTHON
+# ─────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.so
+
+# ─────────────────────────────────────────
+# JUPYTER NOTEBOOKS (checkpoints)
+# ─────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─────────────────────────────────────────
+# DOCKER
+# ─────────────────────────────────────────
+docker-compose.override.yml
+
+# ─────────────────────────────────────────
+# IDEs
+# ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ─────────────────────────────────────────
+# VITE / REACT BUILD OUTPUT
+# ─────────────────────────────────────────
+apps/dashboard/dist/
+apps/citizen-pwa/dist/
+apps/*/node_modules/
+
+# ─────────────────────────────────────────
+# MOSQUITTO MQTT DATA
+# ─────────────────────────────────────────
+mosquitto/data/
+mosquitto/log/
+
+# ─────────────────────────────────────────
+# MISC
+# ─────────────────────────────────────────
+*.bak
+*.tmp
+coverage/
+.nyc_output/
