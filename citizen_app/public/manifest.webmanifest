@@ -1,0 +1,20 @@
+{
+  "name": "BHURAKSHAN Citizen",
+  "short_name": "Bhurakshan",
+  "lang": "en-IN",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f6efe7",
+  "theme_color": "#8d2b1f",
+  "description": "Citizen-facing landslide warning and evacuation guidance interface.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["safety", "weather", "navigation"]
+}

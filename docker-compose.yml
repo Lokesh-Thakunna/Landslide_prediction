@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  bhurakshan-api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./.runtime:/app/.runtime
+    depends_on:
+      - postgres
+      - redis
+
+  bhurakshan-worker:
+    build:
+      context: .
+      dockerfile: services/worker/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./.runtime:/app/.runtime
+    depends_on:
+      - bhurakshan-api
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: bhurakshan_db
+      POSTGRES_USER: bhurakshan
+      POSTGRES_PASSWORD: 9457935872
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+z
+volumes:
+  postgres_data:
+  redis_data:

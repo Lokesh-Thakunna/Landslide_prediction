@@ -1,0 +1,486 @@
+import type {
+  CitizenForecast,
+  CitizenSnapshot,
+  CitizenZoneRisk,
+  ElevationProfile,
+  EmergencyContact,
+  EvacuationRoute,
+  LiveWeather,
+  MediaReportStatus,
+  Shelter,
+  ZoneRoadConditions,
+} from "../types";
+
+const zones: CitizenZoneRisk[] = [
+  {
+    zone_id: "joshimath-core",
+    zone_name: "Joshimath Core",
+    district_id: "dist_chamoli",
+    district_name: "Chamoli",
+    risk_score: 78,
+    risk_level: "DANGER",
+    rainfall_mm_hr: 42.3,
+    warning_text: "Danger expected within 1 hour. Move toward the listed shelter now.",
+    updated_at: "2026-03-19T11:30:00Z",
+  },
+  {
+    zone_id: "helang-corridor",
+    zone_name: "Helang Corridor",
+    district_id: "dist_chamoli",
+    district_name: "Chamoli",
+    risk_score: 62,
+    risk_level: "WATCH",
+    rainfall_mm_hr: 33.8,
+    warning_text: "Watch level. Stay alert and avoid steep roadside edges.",
+    updated_at: "2026-03-19T11:30:00Z",
+  },
+];
+
+const forecasts: Record<string, CitizenForecast> = {
+  "joshimath-core": {
+    zone_id: "joshimath-core",
+    current: {
+      risk_score: 78,
+      risk_level: "DANGER",
+      predicted_at: "2026-03-19T11:30:00Z",
+    },
+    forecast: [
+      {
+        horizon_hours: 1,
+        risk_score: 82,
+        risk_level: "DANGER",
+        forecast_for: "2026-03-19T12:30:00Z",
+      },
+      {
+        horizon_hours: 2,
+        risk_score: 74,
+        risk_level: "DANGER",
+        forecast_for: "2026-03-19T13:30:00Z",
+      },
+    ],
+  },
+  "helang-corridor": {
+    zone_id: "helang-corridor",
+    current: {
+      risk_score: 62,
+      risk_level: "WATCH",
+      predicted_at: "2026-03-19T11:30:00Z",
+    },
+    forecast: [
+      {
+        horizon_hours: 1,
+        risk_score: 69,
+        risk_level: "WATCH",
+        forecast_for: "2026-03-19T12:30:00Z",
+      },
+      {
+        horizon_hours: 2,
+        risk_score: 74,
+        risk_level: "DANGER",
+        forecast_for: "2026-03-19T13:30:00Z",
+      },
+    ],
+  },
+};
+
+const shelters: Shelter[] = [
+  {
+    id: "shelter_01",
+    zone_id: "joshimath-core",
+    name: "Government Inter College",
+    lat: 30.5488,
+    lon: 79.5581,
+    capacity: 350,
+    elevation_m: 1915,
+    distance_km: 1.8,
+    contact_number: "+91 98765 43210",
+  },
+  {
+    id: "shelter_02",
+    zone_id: "helang-corridor",
+    name: "Helang Community Hall",
+    lat: 30.5319,
+    lon: 79.4821,
+    capacity: 180,
+    elevation_m: 1542,
+    distance_km: 2.4,
+    contact_number: "+91 98765 43123",
+  },
+];
+
+const routes: EvacuationRoute[] = [
+  {
+    zone_id: "joshimath-core",
+    safe_shelter_id: "shelter_01",
+    distance_km: 1.8,
+    estimated_minutes: 24,
+    instruction_summary: "Take the main road south and avoid the upper ridge segment.",
+    steps: [
+      "Leave the upper ridge streets and move toward the main south road.",
+      "Do not stop near slope-cut edges.",
+      "Continue to Government Inter College shelter.",
+    ],
+    segment_ids: ["segment-joshimath-main-road", "segment-joshimath-college-approach"],
+    road_status: "caution",
+    caution_segment_count: 1,
+    blocked_segment_count: 0,
+    elevation_gain_m: 28,
+    elevation_loss_m: 96,
+    valley_exposure: "moderate",
+    path_category: "primary",
+    avoids_streams: true,
+    hazard_notes: "Use the marked shoulder through the debris bend and do not pause below cracked walls.",
+    verified_by: "Chamoli Operator",
+    verified_at: "2026-03-19T11:36:00Z",
+    route_warnings: [
+      "Upper ridge shortcut is unstable and should not be used.",
+      "Move steadily through the debris-prone bend.",
+    ],
+  },
+  {
+    zone_id: "helang-corridor",
+    safe_shelter_id: "shelter_02",
+    distance_km: 2.4,
+    estimated_minutes: 29,
+    instruction_summary: "Follow the valley road east and bypass the slope-cut bend.",
+    steps: [
+      "Take the lower valley road toward the east.",
+      "Avoid the upper bend near the slope cut.",
+      "Continue to Helang Community Hall shelter.",
+    ],
+    segment_ids: ["segment-helang-lower-road", "segment-helang-school-link"],
+    road_status: "caution",
+    caution_segment_count: 1,
+    blocked_segment_count: 0,
+    elevation_gain_m: 14,
+    elevation_loss_m: 72,
+    valley_exposure: "moderate",
+    path_category: "primary",
+    avoids_streams: true,
+    hazard_notes: "Upper bend is unsafe after rainfall; remain on the lower access road.",
+    verified_by: "Chamoli Operator",
+    verified_at: "2026-03-19T11:36:00Z",
+    route_warnings: ["Upper bend is blocked by loose debris."],
+  },
+];
+
+const roadConditions: Record<string, ZoneRoadConditions> = {
+  "joshimath-core": {
+    zone_id: "joshimath-core",
+    summary: {
+      zone_id: "joshimath-core",
+      open_count: 1,
+      caution_count: 1,
+      blocked_count: 1,
+      flooded_count: 0,
+      worst_status: "blocked",
+      updated_at: "2026-03-19T11:34:00Z",
+    },
+    segments: [
+      {
+        id: "segment-joshimath-main-road",
+        zone_id: "joshimath-core",
+        name: "Main Southbound Road",
+        road_class: "connector",
+        priority_rank: 1,
+        length_km: 1.1,
+        coordinates: [
+          { lat: 30.5561, lon: 79.5642 },
+          { lat: 30.5531, lon: 79.5614 },
+          { lat: 30.5505, lon: 79.5592 },
+        ],
+        condition: {
+          id: "condition-joshimath-main-road",
+          status: "caution",
+          average_speed_kmph: 12,
+          delay_minutes: 6,
+          severity_pct: 44,
+          source: "demo",
+          note: "One debris-prone bend requires slow movement.",
+          updated_at: "2026-03-19T11:34:00Z",
+        },
+      },
+      {
+        id: "segment-joshimath-upper-cut",
+        zone_id: "joshimath-core",
+        name: "Upper Ridge Shortcut",
+        road_class: "local",
+        priority_rank: 3,
+        length_km: 0.7,
+        coordinates: [
+          { lat: 30.5588, lon: 79.5667 },
+          { lat: 30.5569, lon: 79.5636 },
+          { lat: 30.5549, lon: 79.5611 },
+        ],
+        condition: {
+          id: "condition-joshimath-upper-cut",
+          status: "blocked",
+          average_speed_kmph: 0,
+          delay_minutes: 25,
+          severity_pct: 92,
+          source: "demo",
+          note: "Fresh debris has closed the shortcut.",
+          updated_at: "2026-03-19T11:34:00Z",
+        },
+      },
+    ],
+  },
+  "helang-corridor": {
+    zone_id: "helang-corridor",
+    summary: {
+      zone_id: "helang-corridor",
+      open_count: 1,
+      caution_count: 1,
+      blocked_count: 1,
+      flooded_count: 0,
+      worst_status: "blocked",
+      updated_at: "2026-03-19T11:35:00Z",
+    },
+    segments: [
+      {
+        id: "segment-helang-lower-road",
+        zone_id: "helang-corridor",
+        name: "Lower Access Road",
+        road_class: "connector",
+        priority_rank: 1,
+        length_km: 0.8,
+        coordinates: [
+          { lat: 30.5378, lon: 79.4884 },
+          { lat: 30.5358, lon: 79.4859 },
+          { lat: 30.5337, lon: 79.4836 },
+        ],
+        condition: {
+          id: "condition-helang-lower-road",
+          status: "caution",
+          average_speed_kmph: 14,
+          delay_minutes: 5,
+          severity_pct: 36,
+          source: "demo",
+          note: "Loose gravel on the shoulder after rainfall.",
+          updated_at: "2026-03-19T11:35:00Z",
+        },
+      },
+      {
+        id: "segment-helang-upper-bend",
+        zone_id: "helang-corridor",
+        name: "Upper Bend",
+        road_class: "local",
+        priority_rank: 3,
+        length_km: 0.5,
+        coordinates: [
+          { lat: 30.5392, lon: 79.4905 },
+          { lat: 30.5382, lon: 79.4891 },
+          { lat: 30.5374, lon: 79.4874 },
+        ],
+        condition: {
+          id: "condition-helang-upper-bend",
+          status: "blocked",
+          average_speed_kmph: 0,
+          delay_minutes: 18,
+          severity_pct: 84,
+          source: "demo",
+          note: "Rockfall blocks the upper bend.",
+          updated_at: "2026-03-19T11:35:00Z",
+        },
+      },
+    ],
+  },
+};
+
+const elevationProfiles: Record<string, ElevationProfile> = {
+  "joshimath-core": {
+    zone_id: "joshimath-core",
+    safe_shelter_id: "shelter_01",
+    min_elevation_m: 1915,
+    max_elevation_m: 2012,
+    total_ascent_m: 28,
+    total_descent_m: 96,
+    valley_exposure: "moderate",
+    recommended_direction_label: "Descend on the southbound road toward the college plateau.",
+    points: [
+      { distance_km: 0, elevation_m: 2011, slope_degrees: 14 },
+      { distance_km: 0.4, elevation_m: 1984, slope_degrees: 18 },
+      { distance_km: 0.9, elevation_m: 1958, slope_degrees: 16 },
+      { distance_km: 1.4, elevation_m: 1923, slope_degrees: 11 },
+      { distance_km: 1.8, elevation_m: 1915, slope_degrees: 7 },
+    ],
+  },
+  "helang-corridor": {
+    zone_id: "helang-corridor",
+    safe_shelter_id: "shelter_02",
+    min_elevation_m: 1542,
+    max_elevation_m: 1611,
+    total_ascent_m: 14,
+    total_descent_m: 72,
+    valley_exposure: "moderate",
+    recommended_direction_label: "Keep to the lower road and avoid the upper cut-slope bend.",
+    points: [
+      { distance_km: 0, elevation_m: 1608, slope_degrees: 13 },
+      { distance_km: 0.6, elevation_m: 1579, slope_degrees: 17 },
+      { distance_km: 1.2, elevation_m: 1542, slope_degrees: 5 },
+    ],
+  },
+};
+
+const emergencyContacts: EmergencyContact[] = [
+  {
+    id: "ec_01",
+    label: "District Emergency Control Room",
+    phone: "+91 1077",
+    availability: "24x7",
+  },
+  {
+    id: "ec_02",
+    label: "Police",
+    phone: "+91 112",
+    availability: "24x7",
+  },
+  {
+    id: "ec_03",
+    label: "Ambulance",
+    phone: "+91 108",
+    availability: "24x7",
+  },
+];
+
+const recentMediaStatus: MediaReportStatus = {
+  report_id: "report-joshimath-001",
+  status: "verified",
+  verification_score: 0.83,
+  zone_name: "Joshimath Core",
+  risk_boost_applied: true,
+  message: "Your report was verified and shared with officials.",
+};
+
+const liveWeather: Record<string, LiveWeather> = {
+  "joshimath-core": {
+    zone_id: "joshimath-core",
+    rainfall_mm_hr: 42.3,
+    observed_at: "2026-03-19T11:34:00Z",
+    source: "openweathermap-live",
+    is_stale: false,
+  },
+  "helang-corridor": {
+    zone_id: "helang-corridor",
+    rainfall_mm_hr: 33.8,
+    observed_at: "2026-03-19T11:35:00Z",
+    source: "openweathermap-live",
+    is_stale: false,
+  },
+};
+
+export const mockCitizen: CitizenSnapshot = {
+  zones,
+  forecasts,
+  shelters,
+  routes,
+  emergencyContacts,
+  recentMediaStatus,
+  liveWeather,
+  road_conditions: roadConditions,
+  elevation_profiles: elevationProfiles,
+  locationStatus: {
+    user_location: {
+      lat: 30.5552,
+      lon: 79.5643,
+      zone_id: "joshimath-core",
+      zone_name: "Joshimath Core",
+      district: "Chamoli",
+    },
+    risk: {
+      level: "DANGER",
+      score: 78,
+      nearest_danger_m: 420,
+      nearest_danger_bearing: 42,
+      danger_direction_label: "North-East",
+      nearest_danger_zone_id: "danger-joshimath-upper-cut",
+      nearest_danger_zone_name: "Upper slope cut debris fan",
+      nearest_danger_type: "debris_flow",
+      nearest_danger_note:
+        "Fresh debris movement reported along the upper slope-cut edge. Stay off the north-east ridge lane.",
+    },
+    evacuation: {
+      recommended_safe_zone: {
+        id: "shelter_01",
+        name: "Government Inter College",
+        lat: 30.5488,
+        lon: 79.5581,
+        elevation_m: 1915,
+        capacity: 350,
+        distance_km: 1.8,
+        bearing: 226,
+      },
+      route_available: true,
+      route: {
+        type: "verified_path",
+        distance_km: 1.8,
+        walk_time_min: 24,
+        is_uphill: false,
+        steps: [
+          "Leave the upper ridge streets and move toward the main south road.",
+          "Do not stop near slope-cut edges.",
+          "Continue to Government Inter College shelter.",
+        ],
+        bearing_degrees: 226,
+        bearing_label: "South-West",
+      },
+      offline_fallback: {
+        bearing_degrees: 226,
+        bearing_label: "South-West",
+        distance_km: 1.8,
+        landmark: "Take the main road south and avoid the upper ridge segment.",
+      },
+    },
+    movement: {
+      user_heading_degrees: 42,
+      heading_label: "North-East",
+      moving_toward_danger: true,
+      safe_bearing_degrees: 226,
+      safe_bearing_label: "South-West",
+      danger_bearing_delta_degrees: 0,
+    },
+    warnings: [
+      {
+        type: "evacuate_now",
+        message: "Move now toward Government Inter College.",
+      },
+      {
+        type: "moving_toward_danger",
+        message: "You are moving toward danger. Turn South-West now.",
+      },
+      {
+        type: "active_danger_zone",
+        message:
+          "Avoid Upper slope cut debris fan. Fresh debris movement reported along the upper slope-cut edge.",
+      },
+    ],
+  },
+  nearbySafeZones: [
+    {
+      id: "shelter_01",
+      zone_id: "joshimath-core",
+      name: "Government Inter College",
+      distance_km: 1.8,
+      walk_time_min: 24,
+      elevation_m: 1915,
+      is_uphill_from_user: false,
+      capacity: 350,
+      road_status: "open",
+      route_summary: "Take the main road south and avoid the upper ridge segment.",
+      bearing_degrees: 226,
+    },
+    {
+      id: "shelter_02",
+      zone_id: "helang-corridor",
+      name: "Helang Community Hall",
+      distance_km: 2.4,
+      walk_time_min: 29,
+      elevation_m: 1542,
+      is_uphill_from_user: false,
+      capacity: 180,
+      road_status: "open",
+      route_summary: "Follow the valley road east and bypass the slope-cut bend.",
+      bearing_degrees: 238,
+    },
+  ],
+};
